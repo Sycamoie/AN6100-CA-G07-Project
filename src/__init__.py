@@ -1,13 +1,8 @@
 import os
 
-import Option
+from Option import *
 
-PCno = -1
-
-
-
-if __name__ == "__main__":
-    
+if __name__ == "__main__":    
     # function = input(welcome_str)
     # if function.upper() is "R":
     #     pass
@@ -15,9 +10,14 @@ if __name__ == "__main__":
 #*********************************
 # Option C
 #*********************************
-    # Option.option_c()
+    # option_c()
+
+#*********************************
+# Option D
+#*********************************
+    option_d()
 
 #*********************************
 # Option R
 #*********************************
-    option_r():
+    # option_r()

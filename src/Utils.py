@@ -3,11 +3,11 @@ def acceptInteger1To99(question, error):
     pc_no = input('>>>> ')
     if pc_no.isdigit():
         if int(pc_no) in range(1, 100):
-            return pc_no
+            return int(pc_no)
     print(error)
     return -1
 
-def isChar(chars):
+def isGateID(chars):
     # check if length is 1 or 2 
     if len(chars) not in range(1, 3):
         # invalid if fail in check

@@ -1,4 +1,4 @@
-welcome_str = \
+welcome_hint = \
 """
 ***** Foot Print Contact Point *****
 D: Set Door Gate
@@ -12,6 +12,9 @@ input_gate_hint = \
 """Please enter a valid door gate before recording visits
 """
 
-return_to_menu = \
+return_menu_hint = \
 """press any key to return to the menu.
 """
+
+enter_gateID_hint = \
+"""Please enter a valid Door Gate ID (not more than 2 characters)"""
