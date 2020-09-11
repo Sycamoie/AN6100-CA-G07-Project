@@ -12,7 +12,7 @@ from Hints import welcome_hint
 if __name__ == "__main__":   
     while True:
         # get user choice
-        choice = input(welcome_hint)
+        choice = input(welcome_hint).upper()
 
         # new a instance of Option class
         options = Option()

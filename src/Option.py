@@ -7,10 +7,12 @@
 import Utils
 import Hints
 
+
 PCno = -1
 gateID = '.'
 
 class Option:
+    
     def __init__(self):
         self.option_mapping = {
             'C': "option_c",
@@ -75,24 +77,26 @@ class Option:
 #*********************************
     @classmethod
     def option_r(self):
-        # TODO: replace with option_d
-        while True:
-            if gateID != '.':
-                break
-            else:
-                print(f"{Hints.input_gate_hint}{Hints.return_menu_hint}")
-                door_gate_ID = input(">>>> ")
-                if Utils.isGateID(door_gate_ID):
-                    print('True')
-                elif door_gate_ID.upper() == 'QUIT':
-                    break
-                else:
-                    print(f"invalid door gate id{Hints.return_menu_hint}")
-                    continue
-            with open("ID-DoorGate.txt", 'a+') as door_gate_record:
-                print(door_gate_ID, file=door_gate_record)
+        # Q4.a
+        if gateID == '.':
+            self.option_d()
+        with open("ID-DoorGate.txt", 'w') as door_gate_record:
+            door_gate_record.write(gateID)
+        
+        # Q4.b
         if PCno == -1:
             self.option_c()
+        with open("ID-PCNumber.txt", 'w') as pc_number_record:
+            pc_number_record.write(PCno)
+
+        # Q4.c
+        while True:
+            nric_no = Utils.acceptNRIC()
+            mode = Utils.acceptMode()
+            if mode == 'Q':
+                break
+            elif mode == 'e':
+                contact_no = Utils.acceptContactNo()
         
         # do not quit the program
         return True
