@@ -1,3 +1,9 @@
+# -*- coding: utf-8 -*-
+
+# Description
+# This is part of 20S1 AN6100 group project 01
+# This file contains the long strings for input hint
+
 welcome_hint = \
 """
 ***** Foot Print Contact Point *****

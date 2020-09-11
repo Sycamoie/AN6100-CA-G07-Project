@@ -1,3 +1,9 @@
+# -*- coding: utf-8 -*-
+
+# Description
+# This is part of 20S1 AN6100 group project 01
+# This file contains some util functions which are reuseable
+
 def acceptInteger1To99(question, error):
     print(question)
     pc_no = input('>>>> ')
