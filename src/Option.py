@@ -4,6 +4,7 @@
 # This is part of 20S1 AN6100 group project 01
 # This file contains the main implementation for the program
 
+from datetime import datetime
 import Utils
 import Hints
 
@@ -81,17 +82,22 @@ class Option:
         if gateID == '.':
             self.option_d()
         with open("ID-DoorGate.txt", 'w') as door_gate_record:
-            door_gate_record.write(gateID)
+            door_gate_record.write(str(gateID))
         
         # Q4.b
         if PCno == -1:
             self.option_c()
         with open("ID-PCNumber.txt", 'w') as pc_number_record:
-            pc_number_record.write(PCno)
+            pc_number_record.write(str(PCno).zfill(2))
+
+        print("The system time will be used for record")
+        print(datetime.now())
 
         # Q4.c
         while True:
             nric_no = Utils.acceptNRIC()
+            if nric_no == '':
+                break
             mode = Utils.acceptMode()
             if mode == 'Q':
                 break
