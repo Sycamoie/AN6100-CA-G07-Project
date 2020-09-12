@@ -41,53 +41,63 @@ def get_duration(dtSeries1, dtSeries2):
     return dtSeries2-dtSeries1
 
 
-# procedure to merge the data
-# assuming the file is inside the directory
-in_file, out_file = in_out_sort('INOUT')
+def construct_dataframe(path):
+    # assuming the file is inside the directory
+    in_file, out_file = in_out_sort(path)
+    # change the working directory to 'INNOT
+    os.chdir(path)
+    # tansform both the in file and out file into a dataframe, append them to a list
+    df_in_list = get_dataframe_list(in_file)
+    df_out_list = get_dataframe_list(out_file)
+    return df_in_list, df_out_list
 
-# change the working directory to 'INNOT
-os.chdir('INOUT')
 
-# tansform both the in file and out file into a dataframe, append them to a list
-df_in_list = get_dataframe_list(in_file)
-df_out_list = get_dataframe_list(out_file)
+def concat_n_merge(df_in_list, df_out_list):
+    # concatenate the list of dataframes into a single dataframe for both in and out
+    df_in = pd.concat(df_in_list, axis=0)
+    df_out = pd.concat(df_out_list, axis=0)
+    # merge the two dataframes into a single dataframe
+    df_merge = pd.merge(df_in, df_out, left_on='NRIC', right_on='NRIC')
+    return df_merge
 
-# concatenate the list of dataframes into a single dataframe for both in and out
-df_in = pd.concat(df_in_list, axis=0)
-df_out = pd.concat(df_out_list, axis=0)
 
-# merge the two dataframes into a single dataframe
-df_merge = pd.merge(df_in, df_out, left_on='NRIC', right_on='NRIC')
+def get_datetime_list(dataframe, columndict):
+    dt_list = []
+    # get datetime object for both time columns
+    for colname, format in columndict.items():
+        dt_list.append(get_dateime_object(dataframe, colname, format))
+    return dt_list
 
-# get datetime object for both time columns
-dt1 = get_dateime_object(df_merge, 'Date_x', 'YMD')
-dt2 = get_dateime_object(df_merge, 'TimeIn', 'HM')
-dt3 = get_dateime_object(df_merge, 'Date_y', 'YMD')
-dt4 = get_dateime_object(df_merge, 'TimeOut', 'HM')
 
-# get time deltas
-dur_day = get_duration(dt1, dt4)
-dur_hour = get_duration(dt2, dt3)
+def get_total_durmins(dtlist):
+    dur_day = dtlist[2]-dtlist[0]
+    dur_hour = dtlist[3]-dtlist[1]
+    # get the total timedelta, and transform the result into a series a minutes
+    total_dur = dur_day+dur_hour
+    total_dur = total_dur.map(lambda x: x.seconds//60)
+    return total_dur
 
-# get the total timedelta, and transform the result into a series a minutes
-total_dur = dur_day+dur_hour
-total_dur = total_dur.map(lambda x: x.seconds//60)
 
-# add the series to the dataframe
-df_merge['StayMinsDuration'] = total_dur
+def merge_file(pathname):
+    columnsdictionary = {'Date_x': 'YMD',
+                         'TimeIn': 'HM', 'Date_y': 'YMD', 'TimeOut': 'HM'}
+    df_in_list, df_out_list = construct_dataframe(pathname)
+    df_merge = concat_n_merge(df_in_list, df_out_list)
+    dt_list = get_datetime_list(df_merge, columnsdictionary)
+    total_dur = get_total_durmins(dt_list)
+    # add the series to the dataframe
+    df_merge['StayMinsDuration'] = total_dur
+    # drop the NRIC colum
+    del df_merge["NRIC"]
+    del df_merge['Date_y']
+    # rename the columns
+    df_merge.rename(columns={'Date_x': 'Date', 'TimeIn': 'In Time', 'GateIn': 'In Gate',
+                             'PCIn': 'In PC', 'GateOut': 'OutGate', 'TimeOut': 'Out Time',
+                             'PCOut': 'Out PC'}, inplace=True)
 
-# drop the NRIC colum
-del df_merge["NRIC"]
-del df_merge['Date_y']
+    # reindex the columns to in the same order as the example
+    df_merge = df_merge.reindex(columns=['Date', 'In Time', 'In Gate', 'In PC', 'ContactNo',
+                                         'Out Time', 'Out PC', 'StayMinsDuration'])
 
-# rename the columns
-df_merge.rename(columns={'Date_x': 'Date', 'TimeIn': 'In Time', 'GateIn': 'In Gate',
-                         'PCIn': 'In PC', 'GateOut': 'OutGate', 'TimeOut': 'Out Time',
-                         'PCOut': 'Out PC'}, inplace=True)
-
-# reindex the columns to in the same order as the example
-df_merge = df_merge.reindex(columns=['Date', 'In Time', 'In Gate', 'In PC', 'ContactNo',
-                                     'Out Time', 'Out PC', 'StayMinsDuration'])
-
-# output the result into a csv file
-df_merge.to_csv('merged_output.csv')
+    # output the result into a csv file
+    df_merge.to_csv('merged_output.csv')
