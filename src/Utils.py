@@ -17,8 +17,18 @@ def acceptNRIC():
     while True:
         print("Please input your NRIC number")
         nric_no = input('>>>> ')
-        if nric_no[0] in 'STFG' and len(nric_no) == 9 and nric_no[1:-1].isdigit() and nric_no[-1].isalpha():
-            return nric_no
+        print('typed: ', nric_no)
+        if len(nric_no) == 0 or nric_no == 'Q':
+            # TODO: simplify this
+            if len(nric_no) == 0:
+                print("Press enter again to quit\n")
+                if len(input('>>>> ')) != 0:
+                    print("This is not a valid NRIC number")
+                    continue
+            return ''
+        elif nric_no[0] in 'STFG' and len(nric_no) == 9:
+            if nric_no[1:-1].isdigit() and nric_no[-1].isalpha():
+                return nric_no
         print("This is not a valid NRIC number")
     
 

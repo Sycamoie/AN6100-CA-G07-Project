@@ -1,5 +1,4 @@
 import re
-import Option
 pcnum = 0
 
 # validat gate id, return a false message if the gate id is not valid
