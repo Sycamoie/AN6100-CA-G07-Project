@@ -26,6 +26,29 @@ def get_dataframe_list(filenamelist):
     return df_list
 
 
+# tansform both the in file and out file into a dataframe,
+# append them to a list
+def construct_dataframe(path):
+    # assuming the file is inside the directory
+    in_file, out_file = in_out_sort(path)
+    # change the working directory to 'INNOT
+    os.chdir(path)
+    df_list = []
+    df_list.append(get_dataframe_list(in_file))
+    df_list.append(get_dataframe_list(out_file))
+    return df_list
+
+
+# performa concatenation and merge between two list of dfs
+def concat_n_merge(df_in_list, df_out_list):
+    # concatenate the list of dataframes into a single dataframe for both in and out
+    df_in = pd.concat(df_in_list, axis=0)
+    df_out = pd.concat(df_out_list, axis=0)
+    # merge the two dataframes into a single dataframe
+    df_merge = pd.merge(df_in, df_out, left_on='NRIC', right_on='NRIC')
+    return df_merge
+
+
 # transformed the column into a datetime object based on the format sepcified
 def get_dateime_object(dataframe, column, format):
     if format.upper() == 'YMD':
@@ -37,35 +60,16 @@ def get_dateime_object(dataframe, column, format):
     return dtSeries
 
 
-def construct_dataframe(path):
-    # assuming the file is inside the directory
-    in_file, out_file = in_out_sort(path)
-    # change the working directory to 'INNOT
-    os.chdir(path)
-    df_list = []
-    # tansform both the in file and out file into a dataframe, append them to a list
-    df_list.append(get_dataframe_list(in_file))
-    df_list.append(get_dataframe_list(out_file))
-    return df_list
-
-
-def concat_n_merge(df_in_list, df_out_list):
-    # concatenate the list of dataframes into a single dataframe for both in and out
-    df_in = pd.concat(df_in_list, axis=0)
-    df_out = pd.concat(df_out_list, axis=0)
-    # merge the two dataframes into a single dataframe
-    df_merge = pd.merge(df_in, df_out, left_on='NRIC', right_on='NRIC')
-    return df_merge
-
-
+# get a list of datetime Series from a a column dictionary
+# with kv-pair being column name and formats
 def get_datetime_list(dataframe, columndict):
     dt_list = []
-    # get datetime object for both time columns
     for colname, format in columndict.items():
         dt_list.append(get_dateime_object(dataframe, colname, format))
     return dt_list
 
 
+# get the stay duration in minutes
 def get_total_durmins(dtlist):
     dur_day = dtlist[2]-dtlist[0]
     dur_hour = dtlist[3]-dtlist[1]
@@ -75,18 +79,27 @@ def get_total_durmins(dtlist):
     return total_dur
 
 
+# used to output a merge file in csv format, must specify the path and also
+# the name of the file to be outputed
 def merge_file(pathname, newfilename):
     columnsdictionary = {'Date_x': 'YMD',
                          'TimeIn': 'HM', 'Date_y': 'YMD', 'TimeOut': 'HM'}
+    # construct the dataframe that contains all in dfs at positon 0,
+    # out df at positon 1
     df_list = construct_dataframe(pathname)
+    # unpack the in df and out df
     df_in_list = df_list[0]
     df_out_list = df_list[1]
+    # merge the two dfs into a single df using NRIC number
     df_merge = concat_n_merge(df_in_list, df_out_list)
+    # data manipulation on arrival and leave date, get a
+    # list of datetime objects
     dt_list = get_datetime_list(df_merge, columnsdictionary)
+    # get a Series of duration in minutes
     total_dur = get_total_durmins(dt_list)
     # add the series to the dataframe
     df_merge['StayMinsDuration'] = total_dur
-    # drop the NRIC colum
+    # drop the NRIC and Date_y column
     del df_merge["NRIC"]
     del df_merge['Date_y']
     # rename the columns
