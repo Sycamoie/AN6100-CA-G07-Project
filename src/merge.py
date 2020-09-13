@@ -3,13 +3,19 @@ import numpy as np
 import pandas as pd
 from datetime import datetime, timedelta
 
+# This module is used for the merge functionality of the application
+# To use the module, import the module into the main function and call the
+# merge_file() function,the parameters are the path of the directory storing the in and out
+# csv file and the name for the csv output file
 
 # Sort the in files and the out files inside the directory,
 # returns a tuple of the list of in_file and out_file
+
+
 def in_out_sort(path):
     in_file = []
     out_file = []
-    for dirpathname, filename in os.walk(path):
+    for dirpath, dirname, filename in os.walk(path):
         for file in filename:
             if file[0:2] == 'IN':
                 in_file.append(file)
@@ -108,3 +114,4 @@ def merge_file(pathname, newfilename):
 
     # output the result into a csv file
     df_merge.to_csv(newfilename, index=False)
+    return df_merge
