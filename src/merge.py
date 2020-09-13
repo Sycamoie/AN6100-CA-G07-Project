@@ -37,19 +37,16 @@ def get_dateime_object(dataframe, column, format):
     return dtSeries
 
 
-def get_duration(dtSeries1, dtSeries2):
-    return dtSeries2-dtSeries1
-
-
 def construct_dataframe(path):
     # assuming the file is inside the directory
     in_file, out_file = in_out_sort(path)
     # change the working directory to 'INNOT
     os.chdir(path)
+    df_list = []
     # tansform both the in file and out file into a dataframe, append them to a list
-    df_in_list = get_dataframe_list(in_file)
-    df_out_list = get_dataframe_list(out_file)
-    return df_in_list, df_out_list
+    df_list.append(get_dataframe_list(in_file))
+    df_list.append(get_dataframe_list(out_file))
+    return df_list
 
 
 def concat_n_merge(df_in_list, df_out_list):
@@ -78,10 +75,12 @@ def get_total_durmins(dtlist):
     return total_dur
 
 
-def merge_file(pathname):
+def merge_file(pathname, newfilename):
     columnsdictionary = {'Date_x': 'YMD',
                          'TimeIn': 'HM', 'Date_y': 'YMD', 'TimeOut': 'HM'}
-    df_in_list, df_out_list = construct_dataframe(pathname)
+    df_list = construct_dataframe(pathname)
+    df_in_list = df_list[0]
+    df_out_list = df_list[1]
     df_merge = concat_n_merge(df_in_list, df_out_list)
     dt_list = get_datetime_list(df_merge, columnsdictionary)
     total_dur = get_total_durmins(dt_list)
@@ -100,4 +99,4 @@ def merge_file(pathname):
                                          'Out Time', 'Out PC', 'StayMinsDuration'])
 
     # output the result into a csv file
-    df_merge.to_csv('merged_output.csv')
+    df_merge.to_csv(newfilename, index=False)
