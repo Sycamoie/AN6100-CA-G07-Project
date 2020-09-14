@@ -18,6 +18,9 @@ input_gate_hint = \
 """Please enter a valid door gate before recording visits
 """
 
+invalid_gate_hint = \
+"""Please enter a valid door gatebefore recording visits, press any key to return to the menu.  """
+
 return_menu_hint = \
 """press any key to return to the menu.
 """
