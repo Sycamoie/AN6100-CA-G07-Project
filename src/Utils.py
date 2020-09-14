@@ -17,12 +17,10 @@ def acceptNRIC():
     while True:
         print("Please input your NRIC number")
         nric_no = input('>>>> ')
-        print('typed: ', nric_no)
         if len(nric_no) == 0 or nric_no == 'Q':
             # TODO: simplify this
             if len(nric_no) == 0:
-                print("Press enter again to quit\n")
-                if len(input('>>>> ')) != 0:
+                if len(input("Press enter again to quit  ")) != 0:
                     print("This is not a valid NRIC number")
                     continue
             return ''
@@ -66,3 +64,6 @@ def isGateID(chars):
 
     # valid if passed the test
     return True
+
+Header_IN = ["Date", "Time", "Gate", "PC", "NRIC", "ContactNo"]
+Header_OT = ["Date", "Time", "Gate", "PC", "NRIC"]

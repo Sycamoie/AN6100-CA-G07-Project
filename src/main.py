@@ -9,13 +9,17 @@ import os
 from Option import Option
 from Hints import welcome_hint
 
-if __name__ == "__main__":   
+
+def main():        
+    # new a instance of Option class
+    options = Option()
+
+    # init continue_flag as True
+    continue_flag = True
+    
     while True:
         # get user choice
         choice = input(welcome_hint).upper()
-
-        # new a instance of Option class
-        options = Option()
 
         # if choice is in the mapping
         # it is able to be handled
@@ -27,11 +31,14 @@ if __name__ == "__main__":
             continue_flag = option_func()
         else:
             print("invalid input.")
-        
+
         # if option_func wants to quit the program
         if not continue_flag:
             # quit main menu
             break
-    
+
     # quit the program with exit code 0
     raise SystemExit(0)
+
+if __name__ == "__main__":   
+    main()
