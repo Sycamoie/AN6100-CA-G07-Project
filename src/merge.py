@@ -28,7 +28,7 @@ def in_out_sort(path):
 def get_dataframe_list(filenamelist):
     df_list = []
     for file in filenamelist:
-        df_list.append(pd.read_csv(file))
+        df_list.append(cleaned_data(pd.read_csv(file)))
     return df_list
 
 
@@ -73,6 +73,13 @@ def get_datetime_list(dataframe, columndict):
         dt_list.append(get_dateime_series(dataframe, colname, format))
     return dt_list
 
+# used to clean missing values, drop rows containing Nans
+
+
+def cleaned_data(dataframe):
+    cleaned = dataframe.dropna()
+    return cleaned
+
 
 # get the stay duration in minutes
 
@@ -95,6 +102,7 @@ def merge_file(pathname, newfilename):
     df_in_list, df_out_list = construct_dataframe(pathname)
     # merge the two dfs into a single df using NRIC number
     df_merge = concat_n_merge(df_in_list, df_out_list, 'NRIC')
+    df_merge = cleaned_data(df_merge)
     # data manipulation on arrival and leave date, get a
     # list of datetime objects
     dt_list = get_datetime_list(df_merge, columnsdictionary)
