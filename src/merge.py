@@ -58,10 +58,10 @@ def concat_n_merge(df_in_list, df_out_list, key):
 def get_dateime_series(dataframe, column, format):
     if format.upper() == 'YMD':
         dtSeries = dataframe[column].map(
-            lambda x: datetime.strptime(x, '%Y-%m-%d'))
+            lambda x: datetime.strptime(str(x), '%Y-%m-%d'))
     elif format.upper() == 'HM':
         dtSeries = dataframe[column].map(
-            lambda x: datetime.strptime(x, '%H:%M'))
+            lambda x: datetime.strptime(str(x), '%H:%M'))
     return dtSeries
 
 
@@ -75,6 +75,8 @@ def get_datetime_list(dataframe, columndict):
 
 
 # get the stay duration in minutes
+
+
 def get_total_durmins(dtlist):
     dur_day = dtlist[2]-dtlist[0]
     dur_hour = dtlist[3]-dtlist[1]
@@ -115,3 +117,6 @@ def merge_file(pathname, newfilename):
     # output the result into a csv file
     df_merge.to_csv(newfilename, index=False)
     return df_merge
+
+
+print(merge_file('/Users/linghao/Desktop/6100_project/INOUT', 'merged10.csv'))
