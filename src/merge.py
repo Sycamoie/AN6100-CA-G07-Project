@@ -26,9 +26,7 @@ def in_out_sort(path):
 
 # trasnform the files inside the list into a list of dataframe
 def get_dataframe_list(filenamelist):
-    df_list = []
-    for file in filenamelist:
-        df_list.append(cleaned_data(pd.read_csv(file)))
+    df_list = [pd.read_csv(file) for file in filenamelist]
     return df_list
 
 
@@ -58,30 +56,19 @@ def concat_n_merge(df_in_list, df_out_list, key):
 def get_dateime_series(dataframe, column, format):
     if format.upper() == 'YMD':
         dtSeries = dataframe[column].map(
-            lambda x: datetime.strptime(str(x), '%Y-%m-%d'))
+            lambda x: datetime.strptime(x, '%Y-%m-%d'))
     elif format.upper() == 'HM':
         dtSeries = dataframe[column].map(
-            lambda x: datetime.strptime(str(x), '%H:%M'))
+            lambda x: datetime.strptime(x, '%H:%M'))
     return dtSeries
 
 
 # get a list of datetime Series from a a column dictionary
 # with kv-pair being column name and formats
 def get_datetime_list(dataframe, columndict):
-    dt_list = []
-    for colname, format in columndict.items():
-        dt_list.append(get_dateime_series(dataframe, colname, format))
+    dt_list = [get_dateime_series(dataframe, colname, format)
+               for colname, format in columndict.items()]
     return dt_list
-
-# used to clean missing values, drop rows containing Nans
-
-
-def cleaned_data(dataframe):
-    cleaned = dataframe.dropna()
-    return cleaned
-
-
-# get the stay duration in minutes
 
 
 def get_total_durmins(dtlist):
@@ -101,8 +88,12 @@ def merge_file(pathname, newfilename):
     # construct the dataframe list and unpack the in df and out df
     df_in_list, df_out_list = construct_dataframe(pathname)
     # merge the two dfs into a single df using NRIC number
-    df_merge = concat_n_merge(df_in_list, df_out_list, 'NRIC')
-    df_merge = cleaned_data(df_merge)
+    try:
+        df_merge = concat_n_merge(df_in_list, df_out_list, 'NRIC')
+    except ValueError:
+        print('Please Enter a Valid Path')
+        return "Program Terminated"
+    # df_merge = cleaned_data(df_merge)
     # data manipulation on arrival and leave date, get a
     # list of datetime objects
     dt_list = get_datetime_list(df_merge, columnsdictionary)
@@ -121,10 +112,21 @@ def merge_file(pathname, newfilename):
     # reindex the columns to in the same order as the example
     df_merge = df_merge.reindex(columns=['Date', 'In Time', 'In Gate', 'In PC', 'ContactNo',
                                          'Out Time', 'Out PC', 'StayMinsDuration'])
-
+    # Filtering out negative durations(person might enter multiple times)
+    df_merge = df_merge[df_merge['StayMinsDuration'] > 0]
     # output the result into a csv file
     df_merge.to_csv(newfilename, index=False)
     return df_merge
 
 
-print(merge_file('/Users/linghao/Desktop/6100_project/INOUT', 'merged10.csv'))
+total_time = 0
+for i in range(1):
+    start = datetime.now()
+    print(merge_file('/Users/linghao/Desktop', 'merged10.csv'))
+    end = datetime.now()
+    dur = end-start
+    total_time += dur.seconds
+
+mean = total_time
+
+print(f"completed in {float(mean)} seconds")
