@@ -83,50 +83,40 @@ def get_total_durmins(dtlist):
 # used to output a merge file in csv format, must specify the path and also
 # the name of the file to be outputed
 def merge_file(pathname, newfilename):
-    columnsdictionary = {'Date_x': 'YMD',
-                         'TimeIn': 'HM', 'Date_y': 'YMD', 'TimeOut': 'HM'}
-    # construct the dataframe list and unpack the in df and out df
-    df_in_list, df_out_list = construct_dataframe(pathname)
-    # merge the two dfs into a single df using NRIC number
     try:
+        columnsdictionary = {'Date_x': 'YMD',
+                             'TimeIn': 'HM', 'Date_y': 'YMD', 'TimeOut': 'HM'}
+    # construct the dataframe list and unpack the in df and out df
+        df_in_list, df_out_list = construct_dataframe(pathname)
+    # merge the two dfs into a single df using NRIC number
         df_merge = concat_n_merge(df_in_list, df_out_list, 'NRIC')
-    except ValueError:
-        print('Please Enter a Valid Path')
-        return "Program Terminated"
     # df_merge = cleaned_data(df_merge)
     # data manipulation on arrival and leave date, get a
     # list of datetime objects
-    dt_list = get_datetime_list(df_merge, columnsdictionary)
+        dt_list = get_datetime_list(df_merge, columnsdictionary)
     # get a Series of duration in minutes
-    total_dur = get_total_durmins(dt_list)
+        total_dur = get_total_durmins(dt_list)
     # add the series to the dataframe
-    df_merge['StayMinsDuration'] = total_dur
+        df_merge['StayMinsDuration'] = total_dur
     # drop the NRIC and Date_y column
-    del df_merge["NRIC"]
-    del df_merge['Date_y']
+        del df_merge["NRIC"]
+        del df_merge['Date_y']
     # rename the columns
-    df_merge.rename(columns={'Date_x': 'Date', 'TimeIn': 'In Time', 'GateIn': 'In Gate',
-                             'PCIn': 'In PC', 'GateOut': 'OutGate', 'TimeOut': 'Out Time',
-                             'PCOut': 'Out PC'}, inplace=True)
+        df_merge.rename(columns={'Date_x': 'Date', 'TimeIn': 'In Time', 'GateIn': 'In Gate',
+                                 'PCIn': 'In PC', 'GateOut': 'OutGate', 'TimeOut': 'Out Time',
+                                 'PCOut': 'Out PC'}, inplace=True)
 
     # reindex the columns to in the same order as the example
-    df_merge = df_merge.reindex(columns=['Date', 'In Time', 'In Gate', 'In PC', 'ContactNo',
-                                         'Out Time', 'Out PC', 'StayMinsDuration'])
+        df_merge = df_merge.reindex(columns=['Date', 'In Time', 'In Gate', 'In PC', 'ContactNo',
+                                             'Out Time', 'Out PC', 'StayMinsDuration'])
     # Filtering out negative durations(person might enter multiple times)
-    df_merge = df_merge[df_merge['StayMinsDuration'] > 0]
+        df_merge = df_merge[df_merge['StayMinsDuration'] > 0]
+    except ValueError:
+        print('Please Enter a Valid Path')
+        return "Program Terminated"
+    except:
+        print('Wrong Input type')
+        return "Program Terminated"
     # output the result into a csv file
     df_merge.to_csv(newfilename, index=False)
     return df_merge
-
-
-total_time = 0
-for i in range(1):
-    start = datetime.now()
-    print(merge_file('/Users/linghao/Desktop', 'merged10.csv'))
-    end = datetime.now()
-    dur = end-start
-    total_time += dur.seconds
-
-mean = total_time
-
-print(f"completed in {float(mean)} seconds")
