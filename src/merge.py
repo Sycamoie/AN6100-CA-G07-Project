@@ -114,8 +114,8 @@ def merge_file(pathname, newfilename):
     except ValueError:
         print('Please Enter a Valid Path')
         return "Program Terminated"
-    except:
-        print('Wrong Input type')
+    except BaseException as ex:
+        print(f'{ex}')
         return "Program Terminated"
     # output the result into a csv file
     df_merge.to_csv(newfilename, index=False)
