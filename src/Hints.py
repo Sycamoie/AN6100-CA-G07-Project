@@ -12,7 +12,7 @@ C: Configure PC number
 R : Entrance & Exit Tracking
 M: Merge Input/ Output Files
 Q : Quit
-"""
+>>>> """
 
 input_gate_hint = \
 """Please enter a valid door gate before recording visits

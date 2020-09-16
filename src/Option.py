@@ -5,10 +5,10 @@
 # This file contains the main implementation for the program
 
 from datetime import datetime
-from Utils import *
-import Hints
-import os
 
+import Hints
+from merge import merge_file
+from Utils import *
 
 PCno = -1
 gateID = '.'
@@ -21,140 +21,115 @@ option_mapping = {
     'R': "option_r"
 }
 
-#*********************************
+
+# *********************************
 # Option C
-#*********************************
+# *********************************
 def option_c():
-    PC_no = acceptInteger1To99("Please enter PC Number (1 to 99)", "Invalid entry, please enter any number from 1 to 99 only")
-    if PC_no != -1:
+    PC_num = acceptInteger1To99("Please enter PC Number (1 to 99)",
+                                "Invalid entry, please enter any number from 1 to 99 only")
+    if PC_num != -1:
         global PCno
-        PCno = PC_no
+        PCno = PC_num
 
     # Do not quit the program
     return True
 
-#*********************************
+
+# *********************************
 # Option D
-#*********************************
+# *********************************
 def option_d():
-    door_gate_ID = '.'
-    # TODO: move to Utils
-    while True:
-        print(Hints.enter_gateID_hint)
-        door_gate_ID = input(">>>> ")
-        if isGateID(door_gate_ID):
-            break
-        else:
-            continue
     global gateID
-    gateID = door_gate_ID
+    gateID = acceptDoorGate()
 
     # Do not quit the program
     return True
 
-#*********************************
+
+# *********************************
 # Option M
-#*********************************
+# *********************************
 def option_m():
-    # raise UnimplementedError()
+    merge_file('./INOUT', 'merged_output.csv')
     # do not quit the program
     return True
 
-#*********************************
+
+# *********************************
 # Option Q
-#*********************************
+# *********************************
 def option_q():
     # quit the program
     return False
 
-#*********************************
+
+# *********************************
 # Option R
-#*********************************
+# *********************************
 def option_r():
     # Q4.a
-    if not isGateID(gateID):
-        input(Hints.invalid_gate_hint)
+    # if write failed, return to menu
+    if not writeGateIDToTxt(gateID):
         return True
-    with open("ID-DoorGate.txt", 'w') as door_gate_record:
-        door_gate_record.write(str(gateID))
-    
-    # Q4.b
-    while PCno == -1:
-        option_c()
-    with open("ID-PCNumber.txt", 'w') as pc_number_record:
-        pc_number_record.write(str(PCno).zfill(2))
 
-    print("The system time will be used for record")
-    print(datetime.now())
+    # Q4.b
+    global PCno
+    while PCno == -1:
+        PCno = acceptInteger1To99("Please enter PC Number (1 to 99)",
+                                    "Invalid entry, please enter any number from 1 to 99 only\n")
+    writePCNoToTxt(PCno)
 
     # if the INOUT dir not exist, create it
     if not os.path.exists("./INOUT"):
         try:
             os.makedirs("./INOUT")
-        except Exception:
-            print("unable to create dir 'INOUT'")
+        except Exception as e:
+            print("unable to create sub-dir 'INOUT'\ncaused by ", e)
 
-    # Q4.c
+    # Q4.g
     while True:
         # get current time
-        # time = datetime.now()
-        # ? test with different time
-        time = datetime.strptime("2020-08-08 08:21", r"%Y-%m-%d %H:%M")
-
+        time = datetime.now()
+        # # ? test with different time
+        # time = datetime.strptime("2020-08-08 08:21", r"%Y-%m-%d %H:%M")
+        
+        # Q4.c
         # get nric
         nric_no = acceptNRIC()
         if nric_no == '':
             break
 
         # format a line of data
-        line = [time.strftime(r"%Y-%m-%d"), 
+        line = [time.strftime(r"%Y-%m-%d"),
                 time.strftime(r"%H:%M"),
                 str(gateID),
                 str(PCno).zfill(2),
-                nric_no] 
+                nric_no]
 
+        # Q4.d
         # get mode
         mode = acceptMode()
         if mode == 'Q':
             break
         elif mode == 'e':
+            # Q4.e
             # add contact number to the line
             line.append(acceptContactNo())
+        elif mode == '':
+            print('invalid mode!\n')
+            continue
 
-        # csv starts with IN or OT
-        csv_name = ["IN" if mode == 'e' else "OT"]
-        # then date
-        csv_name.append(time.strftime(r"%Y%m%d"))
-        # then gate ID
-        csv_name.append(str(gateID))
-        # then PC Number
-        csv_name.append(str(PCno).zfill(2))
-        # then hour number
-        csv_name.append(time.strftime("%H00").zfill(4))
+        # Q4.f
+        writeDataToCSV(mode, line)
 
-        # concat into the file name
-        csv_name = '_'.join(csv_name)
-        # add affix to format full path
-        csv_name = './INOUT/'+csv_name+'.csv'
-
-        # add header if csv not exists
-        header =  not os.path.exists(csv_name)
-        print("Header: ", header)
-
-        with open(csv_name, "a+") as csv_out:
-            if header:
-            # if the file does not exist
-                print("adding header")
-                # add headers to it
-                if mode == 'e':
-                    # in header
-                    print(','.join(Header_IN), file=csv_out)
-                elif mode == 'x':
-                    # out header
-                    print(','.join(Header_OT), file=csv_out)
-
-            # write the line to csv_out
-            print(','.join(line), file=csv_out)
-    
     # do not quit the program
     return True
+
+# *********************************
+# Option template
+# *********************************
+# def option_x():
+#    # return True if the program continues
+#    # return False if the program needs to break
+#    return True

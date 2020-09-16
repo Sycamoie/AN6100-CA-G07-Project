@@ -13,7 +13,7 @@ from Hints import welcome_hint
 def main():     
     while True:
         # get user choice
-        choice = input(welcome_hint).upper()
+        choice = input(welcome_hint).strip().upper()
 
         # if choice is in the mapping
         # it is able to be handled
