@@ -5,6 +5,7 @@
 # This file contains some util functions which are reusable
 from Hints import invalid_gate_hint, enter_gateID_hint
 import os
+import re
 
 Header_IN = ["Date", "Time", "Gate", "PC", "NRIC", "ContactNo"]
 Header_OT = ["Date", "Time", "Gate", "PC", "NRIC"]
@@ -33,15 +34,12 @@ def acceptNRIC():
         print("Please input your NRIC number")
         nric_no = input('>>>> ')
         if len(nric_no) == 0 or nric_no == 'Q':
-            # TODO: move to isNRIC()
-            if len(nric_no) == 0:
-                if len(input("Press enter again to quit  ")) != 0:
-                    print("This is not a valid NRIC number")
-                    continue
+            if len(input("Press enter again to quit  ")) != 0:
+                print("Invalid input")
+                continue
             return ''
-        elif nric_no[0] in 'STFG' and len(nric_no) == 9:
-            if nric_no[1:-1].isdigit() and nric_no[-1].isalpha():
-                return nric_no
+        elif isNRIC(nric_no):
+            return nric_no
         print("This is not a valid NRIC number")
 
 
@@ -63,24 +61,27 @@ def acceptContactNo():
         print("invalid contact number")
 
 
-# TODO: rewrite with regex
 def isGateID(chars):
-    # check if length is 1 or 2 
-    if len(chars) not in range(1, 3):
-        # invalid if fail in check
+    # gate ID should be alphanumeric
+    # length within 2
+    if re.match(r'\s*[0-9a-z]{1,2}$', chars, flags=re.IGNORECASE):
+        # return True if valid
+        return True
+    else:
         return False
 
-    # check if is chars
-    for char in chars:
-        # if is char and no (isalnum)
-        if char.isalnum():
-            continue
-        # invalid if fail in check
-        else:
-            return False
 
-    # valid if passed the test
-    return True
+def isNRIC(nric):
+    # check NRIC string pattern
+    # length of 9
+    # start with one of S T F G
+    # follow by 7 numbers
+    # end with a char
+    if re.match(r'\s*[STFG]\d{7}\w', nric, flags=re.IGNORECASE):
+        # return True if valid
+        return True
+    else:
+        return False
 
 
 def writeGateIDToTxt(gateID):
