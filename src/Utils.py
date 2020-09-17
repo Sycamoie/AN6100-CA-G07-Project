@@ -56,7 +56,7 @@ def acceptContactNo():
     while True:
         print("Please input your contact number")
         contact_no = input('>>>> ')
-        if len(contact_no) == 8 and contact_no[0] in '89' and contact_no.isdigit():
+        if isContactNo(contact_no):
             return contact_no
         print("invalid contact number")
 
@@ -64,7 +64,7 @@ def acceptContactNo():
 def isGateID(chars):
     # gate ID should be alphanumeric
     # length within 2
-    if re.match(r'\s*[0-9a-z]{1,2}$', chars, flags=re.IGNORECASE):
+    if re.match(r'\s*[0-9A-Z]{1,2}$', chars, flags=re.IGNORECASE):
         # return True if valid
         return True
     else:
@@ -77,7 +77,17 @@ def isNRIC(nric):
     # start with one of S T F G
     # follow by 7 numbers
     # end with a char
-    if re.match(r'\s*[STFG]\d{7}\w', nric, flags=re.IGNORECASE):
+    if re.match(r'\s*[STFG]\d{7}[A-Z]$', nric, flags=re.IGNORECASE):
+        # return True if valid
+        return True
+    else:
+        return False
+
+
+def isContactNo(contact):
+    # check contact number
+    # can start with country code
+    if re.match(r'\s*\+?(65)?[-\s]?[689]\d{3}\s?\d{4}$', contact, flags=re.IGNORECASE):
         # return True if valid
         return True
     else:
@@ -98,8 +108,6 @@ def writePCNoToTxt(PCno):
         pc_number_record.write(str(PCno).zfill(2))
 
 
-# def writeDataToCSV(mode, line):
-#     pass
 def writeDataToCSV(mode, line):
     # csv starts with IN or OT
     # then date, gate ID, PC Number, hour number
@@ -109,12 +117,10 @@ def writeDataToCSV(mode, line):
                 line[3],
                 f"{line[1].split(':')[0].zfill(2)}00"]
 
+    # same day file name
+    csv_name_of_same_day = '_'.join(csv_name[:-1])
     # concat into the file name
     csv_name = '_'.join(csv_name)
-    # add affix to format full path
-    csv_name = './INOUT/'+csv_name+'.csv'
-    # same day file name
-    csv_name_of_same_day = './INOUT/' + '_'.join(csv_name[:-1])
 
     # as one file per day
     # to make sure that the file for today is not created
@@ -124,14 +130,14 @@ def writeDataToCSV(mode, line):
         if file.startswith(csv_name_of_same_day):
             # write to that file
             csv_name = './INOUT/' + file
-
-    # add header if csv not exists
-    header = not os.path.exists(csv_name)
+            break
+    else:
+        # add affix to format full path
+        csv_name = './INOUT/'+csv_name+'.csv'
 
     with open(csv_name, "a+") as csv_out:
-        # if the file does not exist
-        if header:
-            # add headers to it
+        # add header if csv not exists
+        if not os.path.exists(csv_name):
             if mode == 'e':
                 # in header
                 print(','.join(Header_IN), file=csv_out)
