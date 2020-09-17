@@ -111,7 +111,6 @@ def merge_file(pathname, pathsaved, filename):
     # drop the NRIC and Date_y column
         del df_merge["NRIC"]
         del df_merge['Date_y']
-        return df_merge
     # rename the columns
         df_merge.rename(columns={'Date_x': 'Date', 'TimeIn': 'In Time', 'GateIn': 'In Gate',
                                  'PCIn': 'In PC', 'GateOut': 'OutGate', 'TimeOut': 'Out Time',
@@ -123,6 +122,7 @@ def merge_file(pathname, pathsaved, filename):
         df_merge = df_merge[df_merge['StayMinsDuration'] > 0]
         os.chdir(pathsaved)
         df_merge.to_csv(filename, index=False)
+        return(df_merge)
     except ValueError:
         print('Please Enter a Valid Path. Program Terminated')
     except BaseException as ex:
