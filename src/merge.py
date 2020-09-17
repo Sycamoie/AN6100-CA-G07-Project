@@ -69,14 +69,25 @@ def get_datetime_list(dataframe, columndict):
                for colname, format in columndict.items()]
     return dt_list
 
+# transform two datetime theories, dts1 in YMD format, dts2 in
+# HM format into a single datatime series in DTMHM format
+
+
+def combinedtseries(dtseries1, dtseries2):
+    cdtseries = pd.Series(np.zeros(len(dtseries1)))
+    for i in range(len(dtseries1)):
+        cdtseries[i] = datetime.combine(datetime.date(
+            dtseries1[i]), datetime.time(dtseries2[i]))
+    return cdtseries
+
 
 def get_total_durmins(dtlist):
-    dur_day = dtlist[2]-dtlist[0]
-    dur_hour = dtlist[3]-dtlist[1]
+    dt_in = combinedtseries(dtlist[0], dtlist[1])
+    dt_out = combinedtseries(dtlist[2], dtlist[3])
+    dt_dur = dt_out-dt_in
     # get the total timedelta, and transform the result into a series a minutes
-    total_dur = dur_day+dur_hour
-    total_dur = total_dur.map(lambda x: x.seconds//60)
-    return total_dur
+    total_dur_mins = dt_dur.map(lambda x: x.days*24*60+x.seconds//60)
+    return total_dur_mins
 
 
 # used to output a merge file in csv format, must specify the path and also
@@ -100,6 +111,7 @@ def merge_file(pathname, pathsaved, filename):
     # drop the NRIC and Date_y column
         del df_merge["NRIC"]
         del df_merge['Date_y']
+        return df_merge
     # rename the columns
         df_merge.rename(columns={'Date_x': 'Date', 'TimeIn': 'In Time', 'GateIn': 'In Gate',
                                  'PCIn': 'In PC', 'GateOut': 'OutGate', 'TimeOut': 'Out Time',
@@ -109,10 +121,15 @@ def merge_file(pathname, pathsaved, filename):
                                              'Out Time', 'Out PC', 'StayMinsDuration'])
     # Filtering out negative durations(person might enter multiple times)
         df_merge = df_merge[df_merge['StayMinsDuration'] > 0]
+        os.chdir(pathsaved)
+        df_merge.to_csv(filename, index=False)
     except ValueError:
         print('Please Enter a Valid Path. Program Terminated')
     except BaseException as ex:
         print(f'{ex}')
         print("Program Terminated")
-    os.chdir(pathsaved)
-    df_merge.to_csv(filename, index=False)
+
+
+print(merge_file('/Users/linghao/Desktop/6100_project/INOUT',
+                 '/Users/linghao/Desktop/6100_project/6100practice/AN6100-CA-G07-Project', 'merge.csv'))
+print(os.getcwd())
