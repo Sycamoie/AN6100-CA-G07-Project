@@ -26,8 +26,7 @@ def in_out_sort(path):
 
 # trasnform the files inside the list into a list of dataframe
 def get_dataframe_list(filenamelist):
-    df_list = [pd.read_csv(file) for file in filenamelist]
-    return df_list
+    return [pd.read_csv(file) for file in filenamelist]
 
 
 # tansform both the in file and out file into a dataframe,
@@ -82,7 +81,7 @@ def get_total_durmins(dtlist):
 
 # used to output a merge file in csv format, must specify the path and also
 # the name of the file to be outputed
-def merge_file(pathname, newfilename):
+def merge_file(pathname, pathsaved, filename):
     try:
         columnsdictionary = {'Date_x': 'YMD',
                              'TimeIn': 'HM', 'Date_y': 'YMD', 'TimeOut': 'HM'}
@@ -105,18 +104,15 @@ def merge_file(pathname, newfilename):
         df_merge.rename(columns={'Date_x': 'Date', 'TimeIn': 'In Time', 'GateIn': 'In Gate',
                                  'PCIn': 'In PC', 'GateOut': 'OutGate', 'TimeOut': 'Out Time',
                                  'PCOut': 'Out PC'}, inplace=True)
-
     # reindex the columns to in the same order as the example
         df_merge = df_merge.reindex(columns=['Date', 'In Time', 'In Gate', 'In PC', 'ContactNo',
                                              'Out Time', 'Out PC', 'StayMinsDuration'])
     # Filtering out negative durations(person might enter multiple times)
         df_merge = df_merge[df_merge['StayMinsDuration'] > 0]
     except ValueError:
-        print('Please Enter a Valid Path')
-        return "Program Terminated"
+        print('Please Enter a Valid Path. Program Terminated')
     except BaseException as ex:
         print(f'{ex}')
-        return "Program Terminated"
-    # output the result into a csv file
-    df_merge.to_csv(newfilename, index=False)
-    return df_merge
+        print("Program Terminated")
+    os.chdir(pathsaved)
+    df_merge.to_csv(filename, index=False)
