@@ -27,3 +27,10 @@ return_menu_hint = \
 
 enter_gateID_hint = \
 """Please enter a valid Door Gate ID (not more than 2 characters)"""
+
+mode_selection_hint = \
+"""Please input the mode
+e: Entrance (IN)
+x: Exit (OT)
+Q: “Quitting”
+>>>> """

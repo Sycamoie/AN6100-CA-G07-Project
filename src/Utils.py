@@ -3,7 +3,7 @@
 # Description
 # This is part of 20S1 AN6100 group project 01
 # This file contains some util functions which are reusable
-from Hints import invalid_gate_hint, enter_gateID_hint
+from Hints import invalid_gate_hint, enter_gateID_hint, mode_selection_hint
 import os
 import re
 
@@ -44,7 +44,7 @@ def acceptNRIC():
 
 
 def acceptMode():
-    print("Please input the mode")
+    print(mode_selection_hint)
     mode = input('>>>> ')
     if mode in 'eQx':
         return mode
@@ -135,9 +135,12 @@ def writeDataToCSV(mode, line):
         # add affix to format full path
         csv_name = './INOUT/'+csv_name+'.csv'
 
+    # add header if csv not exists
+    header = not os.path.exists(csv_name)
+
     with open(csv_name, "a+") as csv_out:
         # add header if csv not exists
-        if not os.path.exists(csv_name):
+        if header:
             if mode == 'e':
                 # in header
                 print(','.join(Header_IN), file=csv_out)
