@@ -12,7 +12,7 @@ C: Configure PC number
 R : Entrance & Exit Tracking
 M: Merge Input/ Output Files
 Q : Quit
->>>> """
+"""
 
 input_gate_hint = \
 """Please enter a valid door gate before recording visits
@@ -27,10 +27,3 @@ return_menu_hint = \
 
 enter_gateID_hint = \
 """Please enter a valid Door Gate ID (not more than 2 characters)"""
-
-mode_selection_hint = \
-"""Please input the mode
-e: Entrance (IN)
-x: Exit (OT)
-Q: “Quitting”
->>>> """

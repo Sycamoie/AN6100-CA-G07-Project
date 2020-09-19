@@ -1,11 +1,17 @@
+# -*- coding: utf-8 -*-
+
+# Description
+# This is part of 20S1 AN6100 group project 01
+
 import os
 import numpy as np
 import pandas as pd
 from datetime import datetime, timedelta
 
-# This module is used for the merge functionality of the application
-# To use the module, import the module into the main function and call the
-# merge_file() function,the parameters are the path of the directory storing the in and out
+
+# This file is used for the merge functionality of the application
+# To use the functions, import and call the merge_file() function
+# the parameters are the path of the directory storing the in and out
 # csv file and the name for the csv output file
 
 # Sort the in files and the out files inside the directory,
@@ -15,33 +21,26 @@ from datetime import datetime, timedelta
 def in_out_sort(path):
     in_file = []
     out_file = []
-    for dirpath, dirname, filename in os.walk(path):
-        for file in filename:
-            if file[0:2] == 'IN':
-                in_file.append(file)
-            elif file[0:2] == 'OT':
-                out_file.append(file)
-        return in_file, out_file
+    for file in os.listdir(path):
+        if file[0:2] == 'IN':
+            in_file.append(f"{path}/{file}")
+        elif file[0:2] == 'OT':
+            out_file.append(f"{path}/{file}")
+    return in_file, out_file
 
 
-# trasnform the files inside the list into a list of dataframe
-def get_dataframe_list(filenamelist):
-    return [pd.read_csv(file) for file in filenamelist]
-
-
-# tansform both the in file and out file into a dataframe,
+# transform both the in file and out file into a dataframe,
 # append them to a list
 def construct_dataframe(path):
     # assuming the file is inside the directory
     in_file, out_file = in_out_sort(path)
-    # change the working directory to 'INNOT
-    os.chdir(path)
-    df_in_list = get_dataframe_list(in_file)
-    df_out_list = get_dataframe_list(out_file)
+    # change the working directory to 'INOUT
+    df_in_list = [pd.read_csv(file) for file in in_file]
+    df_out_list = [pd.read_csv(file) for file in out_file]
     return df_in_list, df_out_list
 
 
-# performa concatenation and merge between two list of dfs
+# perform a concatenation and merge between two list of dfs
 def concat_n_merge(df_in_list, df_out_list, key):
     # concatenate the list of dataframes into a single dataframe for both in and out
     df_in = pd.concat(df_in_list, axis=0)
@@ -51,12 +50,12 @@ def concat_n_merge(df_in_list, df_out_list, key):
     return df_merge
 
 
-# transformed the column into a datetime Series based on the format sepcified
-def get_dateime_series(dataframe, column, format):
-    if format.upper() == 'YMD':
+# transformed the column into a datetime Series based on the format specified
+def get_datetime_series(dataframe, column, _format):
+    if _format.upper() == 'YMD':
         dtSeries = dataframe[column].map(
             lambda x: datetime.strptime(x, '%Y-%m-%d'))
-    elif format.upper() == 'HM':
+    elif _format.upper() == 'HM':
         dtSeries = dataframe[column].map(
             lambda x: datetime.strptime(x, '%H:%M'))
     return dtSeries
@@ -65,14 +64,13 @@ def get_dateime_series(dataframe, column, format):
 # get a list of datetime Series from a a column dictionary
 # with kv-pair being column name and formats
 def get_datetime_list(dataframe, columndict):
-    dt_list = [get_dateime_series(dataframe, colname, format)
-               for colname, format in columndict.items()]
+    dt_list = [get_datetime_series(dataframe, colname, _format)
+               for colname, _format in columndict.items()]
     return dt_list
 
+
 # transform two datetime theories, dts1 in YMD format, dts2 in
-# HM format into a single datatime series in DTMHM format
-
-
+# HM format into a single datetime series in DTMHM format
 def combinedtseries(dtseries1, dtseries2):
     cdtseries = pd.Series(np.zeros(len(dtseries1)))
     for i in range(len(dtseries1)):
@@ -91,7 +89,7 @@ def get_total_durmins(dtlist):
 
 
 # used to output a merge file in csv format, must specify the path and also
-# the name of the file to be outputed
+# the name of the file to be outputted
 def merge_file(pathname, pathsaved, filename):
     try:
         columnsdictionary = {'Date_x': 'YMD',
@@ -130,6 +128,6 @@ def merge_file(pathname, pathsaved, filename):
         print("Program Terminated")
 
 
-print(merge_file('/Users/linghao/Desktop/6100_project/INOUT',
-                 '/Users/linghao/Desktop/6100_project/6100practice/AN6100-CA-G07-Project', 'merge.csv'))
-print(os.getcwd())
+# print(merge_file('/Users/linghao/Desktop/6100_project/INOUT',
+#                  '/Users/linghao/Desktop/6100_project/6100practice/AN6100-CA-G07-Project', 'merge.csv'))
+# print(os.getcwd())
