@@ -4,13 +4,9 @@
 # This is part of 20S1 AN6100 group project 01
 # This file is the main entry for the program
 
-<<<<<<< Updated upstream:src/main.py
 import os
 
 from Option import Option
-=======
-import Option
->>>>>>> Stashed changes:main.py
 from Hints import welcome_hint
 
 
@@ -43,7 +39,6 @@ def main():
 
     # quit the program with exit code 0
     raise SystemExit(0)
-
 
 if __name__ == "__main__":   
     main()
