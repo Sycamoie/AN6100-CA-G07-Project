@@ -5,25 +5,31 @@
 # This file contains the long strings for input hint
 
 welcome_hint = \
-"""
+    """
 ***** Foot Print Contact Point *****
 D: Set Door Gate
 C: Configure PC number
 R : Entrance & Exit Tracking
 M: Merge Input/ Output Files
 Q : Quit
-"""
+>>>> """
 
 input_gate_hint = \
-"""Please enter a valid door gate before recording visits
+    """Please enter a valid door gate before recording visits
 """
 
 invalid_gate_hint = \
-"""Please enter a valid door gatebefore recording visits, press any key to return to the menu.  """
+    """Please enter a valid door gatebefore recording visits, press any key to return to the menu.  """
 
 return_menu_hint = \
-"""press any key to return to the menu.
+    """press any key to return to the menu.
 """
 
 enter_gateID_hint = \
-"""Please enter a valid Door Gate ID (not more than 2 characters)"""
+    """Please enter a valid Door Gate ID (not more than 2 characters)"""
+
+mode_selection_hint = \
+    """Please select a mode
+e: Entrance
+x: Exit
+Q: Quit"""

@@ -61,7 +61,7 @@ check if gateID and PCno exists or else invoke method to receive input
 |var| The variable to be saved, namely `gateID` & `PCno`|
 |filename| The filename for opening and saving|
 
-</br>
+<br/>
 
 >
 >Then, use keyboard to scan in the ID
@@ -92,9 +92,9 @@ IN_YYYYMMDD\_[GATE]\_[PC]\_[startTime].csv
 __Columns__
 
 * Date
-* Time
-* Gate
-* PC
+* TimeIn
+* GateIn
+* PCIn
 * NRIC
 * ContactNo
 
@@ -107,9 +107,9 @@ OT_YYYYMMDD\_[GATE]\_[PC]\_[startTime].csv
 __Columns__
 
 * Date
-* Time
-* Gate
-* PC
+* TimeOut
+* GateOut
+* PCOut
 * NRIC
 
 >Merge

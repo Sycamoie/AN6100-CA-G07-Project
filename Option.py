@@ -52,7 +52,7 @@ def option_c():
     return True
 
 
-#*********************************
+# *********************************
 # Option D
 # *********************************
 # Projection Specification 6
@@ -64,17 +64,19 @@ def option_d():
     return True
 
 
-#*********************************
+# *********************************
 # Option M
 # *********************************
 # Projection Specification 9
 def option_m():
-    merge_file('./INOUT', './', 'merged_output.csv')
+    merge_file()
+    print("Merge completed!")
+
     # do not quit the program
     return True
 
 
-#*********************************
+# *********************************
 # Option Q
 # *********************************
 # Projection Specification 3
@@ -83,7 +85,7 @@ def option_q():
     return False
 
 
-#*********************************
+# *********************************
 # Option R
 # *********************************
 # Projection Specification 4
@@ -96,8 +98,8 @@ def option_r():
     # Projection Specification 4.b
     global PCno
     while PCno == -1:
-        PCno  =  acceptInteger1To99("Please enter PC Number (1 to 99)",
-                                    "Invalid entry, please enter any number from 1 to 99 only\n")
+        PCno = acceptInteger1To99("Please enter PC Number (1 to 99)",
+                                  "Invalid entry, please enter any number from 1 to 99 only\n")
     writePCNoToTxt(PCno)
 
     # if the INOUT dir not exist, create it
@@ -136,9 +138,6 @@ def option_r():
             # Projection Specification 4.e
             # add contact number to the line
             line.append(acceptContactNo())
-        elif mode == '':
-            print('invalid mode!\n')
-            continue
 
         # Projection Specification 4.f
         writeDataToCSV(mode, line)

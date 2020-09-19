@@ -7,6 +7,7 @@ from Hints import invalid_gate_hint, enter_gateID_hint, mode_selection_hint
 import os
 import re
 
+# headers for csv files
 Header_IN = ["Date", "TimeIn", "GateIn", "PCIn", "NRIC", "ContactNo"]
 Header_OT = ["Date", "TimeOut", "GateOut", "PCOut", "NRIC"]
 
@@ -22,7 +23,7 @@ def acceptInteger1To99(question: str, error: str) -> int:
     :return: the input pc number if valid or -1 if invalid
     """
     print(question)
-    pc_no = input('>>>> ')
+    pc_no = input('>>>> ').strip()
     if pc_no.isdigit():
         if int(pc_no) in range(1, 100):
             return int(pc_no)
@@ -38,7 +39,7 @@ def acceptDoorGate():
     """
     while True:
         print(enter_gateID_hint)
-        door_gate_id = input('>>>> ')
+        door_gate_id = input('>>>> ').strip()
         if isGateID(door_gate_id):
             return door_gate_id
 
@@ -52,16 +53,27 @@ def acceptNRIC() -> str:
     :return: NRIC if success or blank string if failed
     """
     while True:
+        # ask for inputs
         print("Please input your NRIC number")
-        nric_no = input('>>>> ')
-        if len(nric_no) == 0 or nric_no == 'Q':
+        nric_no = input('>>>> ').strip()
+
+        # if nothing is inputted
+        if len(nric_no) == 0:
+            # ask for pressing enter again
             if len(input("Press enter again to quit  ")) != 0:
+                # if user enter something else, do not quit
                 print("Invalid input")
                 continue
             return ''
+        # quit directly if enter Q for NRIC
+        elif nric_no == 'Q':
+            return ''
+        # check if is valid NRIC no
         elif isNRIC(nric_no):
             return nric_no
-        print("This is not a valid NRIC number")
+        # if not, inform user of invalidity
+        else:
+            print("This is not a valid NRIC number")
 
 
 def acceptMode():
@@ -76,12 +88,18 @@ def acceptMode():
 
     :return: mode or blank string if failed
     """
-    print(mode_selection_hint)
-    mode = input('>>>> ')
-    if mode in 'eQx':
-        return mode
-    else: 
-        return ''
+    while True:
+        # ask for mode input
+        print(mode_selection_hint)
+        mode = input('>>>> ').strip()
+
+        # if input is valid, just return
+        if mode in 'eQx':
+            return mode
+        # else inform
+        else:
+            print("invalid mode! Please input again. Use capital Q if wants quitting")
+            continue
 
 
 def acceptContactNo():
@@ -92,8 +110,8 @@ def acceptContactNo():
     """
     while True:
         print("Please input your contact number")
-        contact_no = input('>>>> ')
-        if isContactNo(contact_no):
+        contact_no = hasContactNo(input('>>>> ').strip())
+        if contact_no:
             return contact_no
         print("invalid contact number")
 
@@ -117,7 +135,7 @@ def isGateID(gate: str) -> bool:
     """
     # gate ID should be alphanumeric
     # length within 2
-    return bool(re.match(r'\s*[0-9A-Z]{1,2}$', gate, flags=re.IGNORECASE))
+    return bool(re.match(r'[0-9A-Z]{1,2}$', gate, flags=re.IGNORECASE))
 
 
 def isNRIC(nric: str) -> bool:
@@ -136,10 +154,10 @@ def isNRIC(nric: str) -> bool:
     :return: validity
     """
     # check NRIC string pattern
-    return bool(re.match(r'\s*[STFG]\d{7}[A-Z]$', nric, flags=re.IGNORECASE))
+    return bool(re.match(r'[STFG]\d{7}[A-Z]$', nric, flags=re.IGNORECASE))
 
 
-def isContactNo(contact: str) -> bool:
+def hasContactNo(contact: str) -> str:
     """
     use regular expression to validate contact number, which should follow:
 
@@ -161,11 +179,15 @@ def isContactNo(contact: str) -> bool:
 
     * 98888888
     :param contact: the contact number to be validated
-    :return: validity
+    :return: the correct contact number
     """
     # check contact number
     # can start with country code
-    return bool(re.match(r'\s*\+?(65)?[-\s]?[689]\d{3}\s?\d{4}$', contact, flags=re.IGNORECASE))
+    contact = re.match(r'\+?(65)?[-\s]?([689]\d{3})\s?(\d{4})$', contact, flags=re.IGNORECASE)
+    if contact:
+        return f"{contact.group(2)}{contact.group(3)}"
+    else:
+        return ''
 
 
 def writeGateIDToTxt(gate_id: str) -> bool:
