@@ -69,8 +69,9 @@ def option_d():
 # *********************************
 # Projection Specification 9
 def option_m():
+    start = datetime.now()
     merge_file()
-    print("Merge completed!")
+    print(f"Merge completed! in {datetime.now() - start}")
 
     # do not quit the program
     return True

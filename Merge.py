@@ -14,18 +14,21 @@ from datetime import datetime
 # the parameters are the path of the directory storing the in and out
 # csv file and the name for the csv output file
 
+# data storage dir
+in_dir = './INOUT'
+# output file
+out_file = './merged_output.csv'
+
 # Sort the in files and the out files inside the directory,
 # returns a tuple of the list of in_file and out_file
-
-
 def in_out_sort():
     in_file = []
     out_file = []
-    for file in os.listdir('./INOUT'):
+    for file in os.listdir(in_dir):
         if file[0:2] == 'IN':
-            in_file.append(f"./INOUT/{file}")
+            in_file.append(f"{in_dir}/{file}")
         elif file[0:2] == 'OT':
-            out_file.append(f"./INOUT/{file}")
+            out_file.append(f"{in_dir}/{file}")
     return in_file, out_file
 
 
@@ -114,20 +117,23 @@ def merge_file():
         del df_merge['Date_y']
 
         # rename the columns
-        df_merge.rename(columns={'Date_x': 'Date', 'TimeIn': 'In Time', 'GateIn': 'In Gate',
-                                 'PCIn': 'In PC', 'GateOut': 'OutGate', 'TimeOut': 'Out Time',
-                                 'PCOut': 'Out PC'}, inplace=True)
+        df_merge.rename(columns={'Date_x': 'Date', 'TimeIn': 'InTime', 'GateIn': 'InGate',
+                                 'PCIn': 'InPC', 'GateOut': 'OutGate', 'TimeOut': 'OutTime',
+                                 'PCOut': 'OutPC'}, inplace=True)
 
         # reindex the columns to in the same order as the example
-        df_merge = df_merge.reindex(columns=['Date', 'In Time', 'In Gate', 'In PC', 'ContactNo',
-                                             'Out Time', 'Out PC', 'StayMinsDuration'])
+        df_merge = df_merge.reindex(columns=['Date', 'InTime', 'InGate', 'InPC', 'ContactNo',
+                                             'OutGate', 'OutTime', 'OutPC', 'StayMinsDuration'])
 
         # Filtering out negative durations(person might enter multiple times)
         df_merge = df_merge[df_merge['StayMinsDuration'] > 0]
-        df_merge.to_csv('./merged_output.csv', index=False)
-        return df_merge
 
-    except ValueError:
-        print('Please Enter a Valid Path.\nProgram Terminated')
-    except BaseException as ex:
+        # writing to csv file
+        df_merge.to_csv(out_file, index=False)
+
+        # return the dataframe
+        # return df_merge
+
+    # print out the exception
+    except Exception as ex:
         print(f'caused by {ex}\nProgram Terminated')
